@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CandidateController;
+use App\Http\Controllers\Api\InterviewController;
 
 Route::post('/register', [AuthController::class, 'register']);
 
@@ -13,4 +14,6 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::apiResource('candidates', CandidateController::class)
+    ->middleware('auth:sanctum');
+    Route::apiResource('interviews', InterviewController::class)
     ->middleware('auth:sanctum');

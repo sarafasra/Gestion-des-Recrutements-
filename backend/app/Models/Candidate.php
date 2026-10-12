@@ -18,6 +18,8 @@ class Candidate extends Model
         'fonction',
         'duree_stage',
         'created_by_rh_id',
+        'priorite',
+
     ];
 
     public function createdByRh(): BelongsTo
