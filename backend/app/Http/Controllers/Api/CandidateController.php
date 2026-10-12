@@ -16,27 +16,33 @@ class CandidateController extends Controller
         )->get();
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'nom' => 'required|string',
-            'prenom' => 'required|string',
-            'email' => 'nullable|email',
-            'telephone' => 'nullable|string',
-            'source' => 'nullable|string',
-            'cv' => 'nullable|string',
-            'fonction' => 'nullable|string',
-            'duree_stage' => 'nullable|string',
-        ]);
+    
+public function store(Request $request)
+{
+    $request->validate([
+        'nom' => 'required',
+        'prenom' => 'required',
+        'cv' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+    ]);
 
-        $data = $request->all();
-        $data['created_by_rh_id'] = $request->user()->id;
+    $data = $request->only([
+        'nom',
+        'prenom',
+        'email',
+        'telephone',
+        'source',
+        'fonction',
+        'duree_stage',
+    ]);
 
-        return response()->json(
-            Candidate::create($data),
-            201
-        );
+    if ($request->hasFile('cv')) {
+        $data['cv'] = $request->file('cv')->store('cvs', 'public');
     }
+
+    $data['created_by_rh_id'] = $request->user()->id;
+
+    return Candidate::create($data);
+}
 
     public function show(Request $request, string $id)
     {
