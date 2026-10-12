@@ -1,5 +1,4 @@
-
-< ?php
+<?php
 
 namespace App\Http\Controllers\Api;
 
@@ -9,46 +8,62 @@ use Illuminate\Http\Request;
 
 class CandidateController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return Candidate::all();
+        return Candidate::where(
+            'created_by_rh_id',
+            $request->user()->id
+        )->get();
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'nom' => 'required',
-            'prenom' => 'required',
+            'nom' => 'required|string',
+            'prenom' => 'required|string',
             'email' => 'nullable|email',
-            'telephone' => 'nullable',
-            'source' => 'nullable',
-            'cv' => 'nullable',
-            'fonction' => 'nullable',
-            'duree_stage' => 'nullable',
+            'telephone' => 'nullable|string',
+            'source' => 'nullable|string',
+            'cv' => 'nullable|string',
+            'fonction' => 'nullable|string',
+            'duree_stage' => 'nullable|string',
         ]);
 
-        $candidate = Candidate::create($request->all());
+        $data = $request->all();
+        $data['created_by_rh_id'] = $request->user()->id;
 
-        return response()->json($candidate, 201);
+        return response()->json(
+            Candidate::create($data),
+            201
+        );
     }
 
-    public function show(string $id)
+    public function show(Request $request, string $id)
     {
-        return Candidate::findOrFail($id);
+        return Candidate::where(
+            'created_by_rh_id',
+            $request->user()->id
+        )->findOrFail($id);
     }
 
     public function update(Request $request, string $id)
     {
-        $candidate = Candidate::findOrFail($id);
+        $candidate = Candidate::where(
+            'created_by_rh_id',
+            $request->user()->id
+        )->findOrFail($id);
 
         $candidate->update($request->all());
 
         return response()->json($candidate);
     }
 
-    public function destroy(string $id)
+    public function destroy(Request $request, string $id)
     {
-        $candidate = Candidate::findOrFail($id);
+        $candidate = Candidate::where(
+            'created_by_rh_id',
+            $request->user()->id
+        )->findOrFail($id);
 
         $candidate->delete();
 
