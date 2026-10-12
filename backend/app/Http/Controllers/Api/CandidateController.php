@@ -9,19 +9,21 @@ use Illuminate\Http\Request;
 class CandidateController extends Controller
 {
 
+
 public function index(Request $request)
 {
-    $query = Candidate::where(
-        'created_by_rh_id',
-        $request->user()->id
-    );
+    $query = Candidate::where('created_by_rh_id', $request->user()->id);
 
-    if ($request->filled('priorite')) {
-        $request->validate([
-            'priorite' => 'in:haute,moyenne,basse',
-        ]);
-
+    if ($request->priorite) {
         $query->where('priorite', $request->priorite);
+    }
+
+    if ($request->nom) {
+        $query->where('nom', 'like', '%' . $request->nom . '%');
+    }
+
+    if ($request->fonction) {
+        $query->where('fonction', 'like', '%' . $request->fonction . '%');
     }
 
     return $query->get();
