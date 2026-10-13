@@ -32,4 +32,37 @@ class AuthController extends Controller
             'token' => $token,
         ], 201);
     }
+
+    public function login(Request $request){
+        $credentials = $request->validate([
+            'email' => ['required','email'],
+            'password' => ['required' , 'string'],
+        ]);
+
+        $user = User::where('email', $credentials['email'])->first();
+
+        if(!$user || !Hash::check($credentials['password'], $user->password)) {
+            return response()->json([
+                'message' => 'Identifiants incorrects.'
+            ], 401);
+        }
+
+        $user->token()->delete();
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Connexion reussie.',
+            'user' => $user,
+            'token' => $token,
+        ], 200);
+    }
+
+    public function logout(Request $request){
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            'message' => 'Deconnexion reussie.'
+        ], 200);
+    }
 }
