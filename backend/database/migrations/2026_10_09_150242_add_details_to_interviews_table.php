@@ -9,38 +9,38 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('candidates', function (Blueprint $table) {
-            $table->string('nom');
-            $table->string('prenom');
-            $table->string('email')->nullable();
-            $table->string('telephone')->nullable();
-            $table->string('source')->nullable();
-            $table->string('cv')->nullable();
-            $table->string('fonction')->nullable();
-            $table->string('duree_stage')->nullable();
+        Schema::table('interviews', function (Blueprint $table) {
+            $table->foreignId('candidate_id')
+                ->constrained('candidates')
+                ->cascadeOnDelete();
 
-            $table->foreignId('created_by_rh_id')
+            $table->foreignId('responsable_id')
                 ->nullable()
                 ->constrained('users')
                 ->nullOnDelete();
+
+            $table->string('type');
+            $table->string('lieu_lien')->nullable();
+            $table->dateTime('date_heure')->nullable();
+            $table->string('statut')->default('planifiee');
+            $table->text('resultat')->nullable();
         });
     }
 
     public function down(): void
     {
-        Schema::table('candidates', function (Blueprint $table) {
-            $table->dropForeign(['created_by_rh_id']);
+        Schema::table('interviews', function (Blueprint $table) {
+            $table->dropForeign(['candidate_id']);
+            $table->dropForeign(['responsable_id']);
 
             $table->dropColumn([
-                'nom',
-                'prenom',
-                'email',
-                'telephone',
-                'source',
-                'cv',
-                'fonction',
-                'duree_stage',
-                'created_by_rh_id',
+                'candidate_id',
+                'responsable_id',
+                'type',
+                'lieu_lien',
+                'date_heure',
+                'statut',
+                'resultat',
             ]);
         });
     }

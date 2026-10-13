@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 
+=======
+>>>>>>> a67e224db2d286bce01ee5ef3511dedf1a720e7b
 <?php
 
 namespace App\Models;
@@ -19,6 +22,8 @@ class Candidate extends Model
         'fonction',
         'duree_stage',
         'created_by_rh_id',
+        'priorite',
+
     ];
 
     public function createdByRh(): BelongsTo
