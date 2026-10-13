@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { AuthContext } from '../../context/AuthContext'
 import api from '../../services/api'
 
@@ -68,11 +68,22 @@ export default function UserManagement() {
     <div className="min-h-screen bg-slate-50">
       <nav className="border-b border-slate-200 bg-white px-8 py-4 shadow-sm">
         <div className="mx-auto flex max-w-6xl items-center justify-between">
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-6">
             <span className="text-xl font-bold text-indigo-700">RecrutPro</span>
-            <span className="rounded-md bg-purple-100 px-2.5 py-0.5 text-xs font-semibold text-purple-700">
-              Espace Admin
-            </span>
+            <div className="flex space-x-4">
+              <Link
+                to="/admin/dashboard"
+                className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 transition"
+              >
+                Supervision Globale
+              </Link>
+              <Link
+                to="/admin/users"
+                className="rounded-lg bg-indigo-50 px-3 py-2 text-sm font-semibold text-indigo-700 transition"
+              >
+                Gestion Utilisateurs
+              </Link>
+            </div>
           </div>
 
           <div className="flex items-center space-x-4">

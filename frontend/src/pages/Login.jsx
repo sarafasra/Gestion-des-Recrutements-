@@ -16,7 +16,7 @@ export default function Login() {
       const res = await login(email, password)
       
       if (res?.user?.role === 'admin' || localStorage.getItem('role') === 'admin') {
-        navigate('/admin/users')
+        navigate('/admin/dashboard')
       } else {
         navigate('/rh/dashboard')
       }
