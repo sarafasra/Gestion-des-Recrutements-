@@ -11,10 +11,14 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::get('/user', function (Request $request) {
-    return $request->user();})->middleware('auth:sanctum');
+    return $request->user();
+})->middleware('auth:sanctum');
 
 Route::apiResource('candidates', CandidateController::class)
     ->middleware('auth:sanctum');
-    Route::get('/candidates/{id}/cv', [CandidateController::class, 'showCv'])->middleware('auth:sanctum');
 
-    Route::apiResource('interviews', InterviewController::class)->middleware('auth:sanctum');
+Route::get('/candidates/{id}/cv', [CandidateController::class, 'showCv'])
+    ->middleware('auth:sanctum');
+
+Route::apiResource('interviews', InterviewController::class)
+    ->middleware('auth:sanctum');
