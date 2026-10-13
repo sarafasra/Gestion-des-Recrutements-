@@ -9,26 +9,37 @@ use Illuminate\Http\Request;
 
 class InterviewController extends Controller
 {
-    public function index(Request $request)
-    {
-        return Interview::with('candidate')
-            ->whereHas('candidate', function ($query) use ($request) {
-                $query->where('created_by_rh_id', $request->user()->id);
-            })
-            ->get();
+    
+public function index(Request $request)
+{
+    $query = Interview::with('candidate')
+        ->whereHas('candidate', function ($query) use ($request) {
+            $query->where('created_by_rh_id', $request->user()->id);
+        });
+
+    if ($request->statut) {
+        $query->where('statut', $request->statut);
     }
+
+    if ($request->responsable_id) {
+        $query->where('responsable_id', $request->responsable_id);
+    }
+
+    return $query->get();
+}
 
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'candidate_id' => 'required|exists:candidates,id',
-            'responsable_id' => 'nullable|exists:users,id',
-            'type' => 'required|string',
-            'lieu_lien' => 'nullable|string',
-            'date_heure' => 'nullable|date',
-            'statut' => 'nullable|string',
-            'resultat' => 'nullable|string',
-        ]);
+$data = $request->validate([
+    'candidate_id' => 'required|exists:candidates,id',
+'responsable_id' => 'required|exists:users,id,role,rh',
+    'type' => 'required|in:en_ligne,presentiel',
+    'lieu_lien' => 'required|string',
+    'date_heure' => 'required|date',
+    'statut' => 'nullable|in:planifiee,en_attente,accepte,refuse,annule',
+    'resultat' => 'nullable|string',
+]);
+
 
         Candidate::where('created_by_rh_id', $request->user()->id)
             ->findOrFail($data['candidate_id']);
@@ -53,15 +64,15 @@ class InterviewController extends Controller
             $query->where('created_by_rh_id', $request->user()->id);
         })->findOrFail($id);
 
-        $data = $request->validate([
-            'candidate_id' => 'sometimes|exists:candidates,id',
-            'responsable_id' => 'nullable|exists:users,id',
-            'type' => 'sometimes|string',
-            'lieu_lien' => 'nullable|string',
-            'date_heure' => 'nullable|date',
-            'statut' => 'nullable|string',
-            'resultat' => 'nullable|string',
-        ]);
+$data = $request->validate([
+    'candidate_id' => 'sometimes|required|exists:candidates,id',
+'responsable_id' => 'sometimes|required|exists:users,id,role,rh',
+    'type' => 'sometimes|required|in:en_ligne,presentiel',
+    'lieu_lien' => 'sometimes|required|string',
+    'date_heure' => 'sometimes|required|date',
+    'statut' => 'sometimes|required|in:planifiee,en_attente,accepte,refuse,annule',
+    'resultat' => 'nullable|string',
+]);
 
         if (isset($data['candidate_id'])) {
             Candidate::where('created_by_rh_id', $request->user()->id)
