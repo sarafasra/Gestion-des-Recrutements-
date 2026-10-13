@@ -13,8 +13,13 @@ export default function Login() {
     e.preventDefault()
     setError('')
     try {
-      await login(email, password)
-      navigate('/dashboard') 
+      const res = await login(email, password)
+      
+      if (res?.user?.role === 'admin' || localStorage.getItem('role') === 'admin') {
+        navigate('/admin/dashboard')
+      } else {
+        navigate('/rh/dashboard')
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Identifiants incorrects ou erreur de connexion')
     }
