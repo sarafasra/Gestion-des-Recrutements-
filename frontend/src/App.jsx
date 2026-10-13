@@ -1,9 +1,9 @@
 
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import Register from './pages/Register'
-import Login from './pages/Login'
-import Dashboard from './pages/Dashboard'
-import Candidates from './pages/Candidates'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import Register from './pages/Register';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
+import Candidates from './pages/Candidates';
 
 function App() {
   return (
@@ -16,7 +16,7 @@ function App() {
         <Route path="/candidates" element={<Candidates />} />
       </Routes>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;

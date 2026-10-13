@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+
+=======
+>>>>>>> a67e224db2d286bce01ee5ef3511dedf1a720e7b
 <?php
 
 namespace App\Models;
