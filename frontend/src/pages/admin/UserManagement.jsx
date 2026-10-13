@@ -7,7 +7,9 @@ export default function UserManagement() {
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  
   const [showModal, setShowModal] = useState(false)
+  const [editingUser, setEditingUser] = useState(null) 
 
   const { user, logout } = useContext(AuthContext)
   const navigate = useNavigate()
@@ -32,19 +34,41 @@ export default function UserManagement() {
     fetchUsers()
   }, [])
 
-  const handleCreateUser = async (e) => {
+  const handleOpenCreateModal = () => {
+    setEditingUser(null)
+    setName('')
+    setEmail('')
+    setPassword('')
+    setRole('rh')
+    setShowModal(true)
+  }
+
+  const handleOpenEditModal = (u) => {
+    setEditingUser(u)
+    setName(u.name)
+    setEmail(u.email)
+    setPassword('') 
+    setRole(u.role || 'rh')
+    setShowModal(true)
+  }
+
+  const handleSubmitUser = async (e) => {
     e.preventDefault()
     setError('')
     try {
-      await api.post('/users', { name, email, password, role })
+      if (editingUser) {
+        const payload = { name, email, role }
+        if (password) payload.password = password 
+
+        await api.put(`/users/${editingUser.id}`, payload)
+      } else {
+        await api.post('/users', { name, email, password, role })
+      }
+
       setShowModal(false)
-      setName('')
-      setEmail('')
-      setPassword('')
-      setRole('rh')
       fetchUsers()
     } catch (err) {
-      setError(err.response?.data?.message || 'Erreur lors de la création.')
+      setError(err.response?.data?.message || 'Erreur lors de l\'enregistrement.')
     }
   }
 
@@ -87,9 +111,7 @@ export default function UserManagement() {
           </div>
 
           <div className="flex items-center space-x-4">
-            <span className="text-sm font-medium text-slate-700">
-              {user?.name}
-            </span>
+            <span className="text-sm font-medium text-slate-700">{user?.name}</span>
             <button
               onClick={handleLogout}
               className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
@@ -107,7 +129,7 @@ export default function UserManagement() {
             <p className="text-slate-500">Ajoutez, gérez et supervisez les comptes de la plateforme.</p>
           </div>
           <button
-            onClick={() => setShowModal(true)}
+            onClick={handleOpenCreateModal}
             className="rounded-lg bg-indigo-600 px-5 py-2.5 font-semibold text-white transition hover:bg-indigo-700"
           >
             + Ajouter un Utilisateur
@@ -143,7 +165,13 @@ export default function UserManagement() {
                         {u.role ? u.role.toUpperCase() : 'RH'}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-6 py-4 text-right space-x-3">
+                      <button
+                        onClick={() => handleOpenEditModal(u)}
+                        className="font-semibold text-indigo-600 hover:underline"
+                      >
+                        Modifier
+                      </button>
                       <button
                         onClick={() => handleDeleteUser(u.id)}
                         className="font-semibold text-red-600 hover:underline"
@@ -161,8 +189,10 @@ export default function UserManagement() {
         {showModal && (
           <div className="fixed inset-0 flex items-center justify-center bg-black/50 p-4 z-50">
             <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
-              <h2 className="mb-4 text-xl font-bold text-slate-800">Ajouter un Utilisateur</h2>
-              <form onSubmit={handleCreateUser} className="space-y-4">
+              <h2 className="mb-4 text-xl font-bold text-slate-800">
+                {editingUser ? 'Modifier l\'Utilisateur' : 'Ajouter un Utilisateur'}
+              </h2>
+              <form onSubmit={handleSubmitUser} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700">Nom Complet</label>
                   <input
@@ -184,10 +214,12 @@ export default function UserManagement() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700">Mot de passe</label>
+                  <label className="block text-sm font-medium text-slate-700">
+                    Mot de passe {editingUser && '(Laissez vide si inchangé)'}
+                  </label>
                   <input
                     type="password"
-                    required
+                    required={!editingUser}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full rounded-lg border border-slate-300 p-2.5 outline-none focus:border-indigo-500"
@@ -216,7 +248,7 @@ export default function UserManagement() {
                     type="submit"
                     className="rounded-lg bg-indigo-600 px-4 py-2 font-semibold text-white hover:bg-indigo-700"
                   >
-                    Enregistrer
+                    {editingUser ? 'Enregistrer les modifications' : 'Créer'}
                   </button>
                 </div>
               </form>
