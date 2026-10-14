@@ -10,7 +10,6 @@ class Interview extends Model
     protected $fillable = [
         'candidate_id',
         'responsable_id',
-        'created_by_rh_id',
         'type',
         'lieu_lien',
         'date_heure',
@@ -33,10 +32,5 @@ class Interview extends Model
     public function responsable(): BelongsTo
     {
         return $this->belongsTo(User::class, 'responsable_id');
-    }
-
-    public function createdByRh(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'created_by_rh_id');
     }
 }

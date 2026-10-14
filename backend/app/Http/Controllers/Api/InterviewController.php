@@ -10,23 +10,22 @@ use Illuminate\Http\Request;
 class InterviewController extends Controller
 {
     
+
 public function index(Request $request)
 {
-    $query = Interview::with('candidate')
-        ->whereHas('candidate', function ($query) use ($request) {
-            $query->where('created_by_rh_id', $request->user()->id);
-        });
+    $query = Interview::with('candidate');
 
-    if ($request->statut) {
+    if ($request->filled('statut')) {
         $query->where('statut', $request->statut);
     }
 
-    if ($request->responsable_id) {
+    if ($request->filled('responsable_id')) {
         $query->where('responsable_id', $request->responsable_id);
     }
 
-    return $query->get();
+    return response()->json($query->latest()->get());
 }
+
 
     public function store(Request $request)
     {

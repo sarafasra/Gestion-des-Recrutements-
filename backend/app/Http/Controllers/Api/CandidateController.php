@@ -9,36 +9,39 @@ use Illuminate\Support\Facades\Storage;
 
 class CandidateController extends Controller
 {
-    public function index(Request $request)
-    {
-        $query = Candidate::where(
-            'created_by_rh_id',
-            $request->user()->id
-        );
+   
+public function index(Request $request)
+{
+    $query = Candidate::query();
 
-        if ($request->filled('priorite')) {
-            $query->where('priorite', $request->priorite);
-        }
-
-        if ($request->filled('nom')) {
-            $query->where('nom', 'like', '%' . $request->nom . '%');
-        }
-
-        if ($request->filled('fonction')) {
-            $query->where('fonction', 'like', '%' . $request->fonction . '%');
-        }
-
-        if ($request->filled('statut')) {
-            $query->whereHas('interviews', function ($interviewQuery) use ($request) {
-                $interviewQuery->where('statut', $request->statut);
-            });
-        }
-
-        return response()->json($query->get());
+    if ($request->filled('priorite')) {
+        $query->where('priorite', $request->priorite);
     }
+
+    if ($request->filled('nom')) {
+        $query->where('nom', 'like', '%' . $request->nom . '%');
+    }
+
+    if ($request->filled('fonction')) {
+        $query->where('fonction', 'like', '%' . $request->fonction . '%');
+    }
+
+    if ($request->filled('statut')) {
+        $query->whereHas('interviews', function ($interviewQuery) use ($request) {
+            $interviewQuery->where('statut', $request->statut);
+        });
+    }
+
+    return response()->json($query->latest()->get());
+}
+
+
+      
 
     public function store(Request $request)
     {
+       
+      
         $data = $request->validate([
             'nom' => 'required|string',
             'prenom' => 'required|string',
@@ -48,7 +51,7 @@ class CandidateController extends Controller
             'fonction' => 'required|string',
             'duree_stage' => 'required|string',
             'priorite' => 'required|in:haute,moyenne,basse',
-            'cv' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+'cv' => 'nullable|file|extensions:pdf,doc,docx|max:2048',
         ]);
 
         if ($request->hasFile('cv')) {
@@ -140,20 +143,20 @@ class CandidateController extends Controller
         ]);
     }
 
-    public function showCv(Request $request, string $id)
-    {
-        $candidate = Candidate::where(
-            'created_by_rh_id',
-            $request->user()->id
-        )->findOrFail($id);
 
-        if (
-            !$candidate->cv ||
-            !Storage::disk('local')->exists($candidate->cv)
-        ) {
-            abort(404, 'CV introuvable');
-        }
+public function showCv(Request $request, string $id)
+{
+    $candidate = Candidate::where(
+        'created_by_rh_id',
+        $request->user()->id
+    )->findOrFail($id);
 
-        return Storage::disk('local')->download($candidate->cv);
+    if (!$candidate->cv || !Storage::disk('local')->exists($candidate->cv)) {
+        abort(404, 'CV introuvable');
     }
+
+    return Storage::disk('local')->download($candidate->cv);
+}
+
+
 }
