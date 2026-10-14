@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CandidateController;
 use App\Http\Controllers\Api\InterviewController;
-use App\Models\User;
+use App\Http\Controllers\Api\RhController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -15,12 +15,8 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/rh-users', function () {
-        return User::where('role', 'rh')
-            ->select('id', 'name')
-            ->orderBy('name')
-            ->get();
-    });
+
+    Route::get('/rh-users', [RhController::class, 'index']);
 
     Route::apiResource('candidates', CandidateController::class);
 
@@ -30,4 +26,5 @@ Route::middleware('auth:sanctum')->group(function () {
     ]);
 
     Route::apiResource('interviews', InterviewController::class);
+
 });
