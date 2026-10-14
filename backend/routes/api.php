@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CandidateController;
 use App\Http\Controllers\Api\InterviewController;
 use App\Http\Controllers\Api\RhController;
+use App\Http\Controllers\Api\SupervisionController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -15,6 +16,12 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(function () {
+
+    Route::post('/logout', [AuthController::class, 'logout']);
+
+    Route::get('/rh/dashboard-stats', [SupervisionController::class, 'rhDashboard']);
+    Route::get('/admin/supervision', [SupervisionController::class, 'index'])
+        ->middleware('admin');
 
     Route::get('/rh-users', [RhController::class, 'index']);
 
