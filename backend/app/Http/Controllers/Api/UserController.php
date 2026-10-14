@@ -11,7 +11,11 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::latest()->get();
+        $users = User::query()
+            ->select(['id', 'name', 'email', 'role'])
+            ->latest()
+            ->get();
+
         return response()->json($users);
     }
 
@@ -44,8 +48,15 @@ class UserController extends Controller
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
             'email' => 'sometimes|email|unique:users,email,'.$user->id,
+            'password' => 'sometimes|nullable|string|min:8',
             'role' => 'sometimes|in:admin,rh',
         ]);
+
+        if (empty($validated['password'])) {
+            unset($validated['password']);
+        } else {
+            $validated['password'] = Hash::make($validated['password']);
+        }
 
         $user->update($validated);
 

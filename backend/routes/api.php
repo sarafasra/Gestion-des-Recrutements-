@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\CandidateController;
 use App\Http\Controllers\Api\InterviewController;
 use App\Http\Controllers\Api\RhController;
 use App\Http\Controllers\Api\SupervisionController;
+use App\Http\Controllers\Api\UserController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -19,19 +20,23 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    Route::get('/rh/dashboard-stats', [SupervisionController::class, 'rhDashboard']);
-    Route::get('/admin/supervision', [SupervisionController::class, 'index'])
-        ->middleware('admin');
+    Route::middleware('admin')->group(function () {
+        Route::get('/admin/supervision', [SupervisionController::class, 'index']);
+        Route::apiResource('users', UserController::class)->except(['show']);
+    });
 
-    Route::get('/rh-users', [RhController::class, 'index']);
+    Route::middleware('rh')->group(function () {
+        Route::get('/rh/dashboard-stats', [SupervisionController::class, 'rhDashboard']);
+        Route::get('/rh-users', [RhController::class, 'index']);
 
-    Route::apiResource('candidates', CandidateController::class);
+        Route::apiResource('candidates', CandidateController::class);
 
-    Route::get('/candidates/{id}/cv', [
-        CandidateController::class,
-        'showCv'
-    ]);
+        Route::get('/candidates/{id}/cv', [
+            CandidateController::class,
+            'showCv'
+        ]);
 
-    Route::apiResource('interviews', InterviewController::class);
+        Route::apiResource('interviews', InterviewController::class);
+    });
 
 });
