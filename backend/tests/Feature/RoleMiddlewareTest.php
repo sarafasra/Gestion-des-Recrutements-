@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\AdminOrRhMiddleware;
 use App\Http\Middleware\RhMiddleware;
 use Illuminate\Http\Request;
 use Tests\TestCase;
@@ -23,6 +24,15 @@ class RoleMiddlewareTest extends TestCase
 
         $this->assertSame(204, $this->runMiddleware($middleware, 'admin'));
         $this->assertSame(403, $this->runMiddleware($middleware, 'rh'));
+    }
+
+    public function test_candidate_and_interview_read_routes_allow_both_roles_only(): void
+    {
+        $middleware = new AdminOrRhMiddleware();
+
+        $this->assertSame(204, $this->runMiddleware($middleware, 'admin'));
+        $this->assertSame(204, $this->runMiddleware($middleware, 'rh'));
+        $this->assertSame(403, $this->runMiddleware($middleware, 'guest'));
     }
 
     private function runMiddleware(object $middleware, string $role): int

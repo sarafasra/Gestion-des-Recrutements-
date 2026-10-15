@@ -13,7 +13,13 @@ class InterviewController extends Controller
 
 public function index(Request $request)
 {
-    $query = Interview::with('candidate');
+    $query = Interview::with(['candidate', 'responsable:id,name']);
+
+    if ($request->user()->role === 'rh') {
+        $query->whereHas('candidate', function ($candidateQuery) use ($request) {
+            $candidateQuery->where('created_by_rh_id', $request->user()->id);
+        });
+    }
 
     if ($request->filled('statut')) {
         $query->where('statut', $request->statut);
@@ -50,11 +56,15 @@ $data = $request->validate([
 
     public function show(Request $request, string $id)
     {
-        return Interview::with('candidate')
-            ->whereHas('candidate', function ($query) use ($request) {
-                $query->where('created_by_rh_id', $request->user()->id);
-            })
-            ->findOrFail($id);
+        $query = Interview::with(['candidate', 'responsable:id,name']);
+
+        if ($request->user()->role === 'rh') {
+            $query->whereHas('candidate', function ($candidateQuery) use ($request) {
+                $candidateQuery->where('created_by_rh_id', $request->user()->id);
+            });
+        }
+
+        return $query->findOrFail($id);
     }
 
     public function update(Request $request, string $id)

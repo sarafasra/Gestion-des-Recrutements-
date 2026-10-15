@@ -14,6 +14,10 @@ public function index(Request $request)
 {
     $query = Candidate::query();
 
+    if ($request->user()->role === 'rh') {
+        $query->where('created_by_rh_id', $request->user()->id);
+    }
+
     if ($request->filled('priorite')) {
         $query->where('priorite', $request->priorite);
     }
@@ -67,10 +71,13 @@ public function index(Request $request)
 
     public function show(Request $request, string $id)
     {
-        $candidate = Candidate::where(
-            'created_by_rh_id',
-            $request->user()->id
-        )->findOrFail($id);
+        $query = Candidate::query();
+
+        if ($request->user()->role === 'rh') {
+            $query->where('created_by_rh_id', $request->user()->id);
+        }
+
+        $candidate = $query->findOrFail($id);
 
         return response()->json($candidate);
     }
@@ -146,10 +153,13 @@ public function index(Request $request)
 
 public function showCv(Request $request, string $id)
 {
-    $candidate = Candidate::where(
-        'created_by_rh_id',
-        $request->user()->id
-    )->findOrFail($id);
+    $query = Candidate::query();
+
+    if ($request->user()->role === 'rh') {
+        $query->where('created_by_rh_id', $request->user()->id);
+    }
+
+    $candidate = $query->findOrFail($id);
 
     if (!$candidate->cv || !Storage::disk('local')->exists($candidate->cv)) {
         abort(404, 'CV introuvable');
