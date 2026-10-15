@@ -73,7 +73,7 @@ public function index(Request $request)
     {
         $query = Candidate::query();
 
-        if ($request->user()->role === 'rh') {
+        if ($request->user()->role !== 'admin') {
             $query->where('created_by_rh_id', $request->user()->id);
         }
 
@@ -84,10 +84,13 @@ public function index(Request $request)
 
     public function update(Request $request, string $id)
     {
-        $candidate = Candidate::where(
-            'created_by_rh_id',
-            $request->user()->id
-        )->findOrFail($id);
+        $query = Candidate::query();
+
+        if ($request->user()->role !== 'admin') {
+            $query->where('created_by_rh_id', $request->user()->id);
+        }
+
+        $candidate = $query->findOrFail($id);
 
         $data = $request->validate([
             'nom' => 'sometimes|required|string',
@@ -132,10 +135,13 @@ public function index(Request $request)
 
     public function destroy(Request $request, string $id)
     {
-        $candidate = Candidate::where(
-            'created_by_rh_id',
-            $request->user()->id
-        )->findOrFail($id);
+        $query = Candidate::query();
+
+        if ($request->user()->role !== 'admin') {
+            $query->where('created_by_rh_id', $request->user()->id);
+        }
+
+        $candidate = $query->findOrFail($id);
 
         $cvPath = $candidate->cv;
 
@@ -155,7 +161,7 @@ public function showCv(Request $request, string $id)
 {
     $query = Candidate::query();
 
-    if ($request->user()->role === 'rh') {
+    if ($request->user()->role !== 'admin') {
         $query->where('created_by_rh_id', $request->user()->id);
     }
 

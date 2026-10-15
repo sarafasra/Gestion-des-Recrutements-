@@ -16,7 +16,8 @@ class SupervisionController extends Controller
         $stats = [
             'total_users' => User::count(),
             'total_rh' => User::where('role', 'rh')->count(),
-            ...$this->recruitmentStats(),
+            'total_candidates' => Candidate::count(),
+            'total_interviews' => Interview::count(),
         ];
 
         $candidates = Candidate::with('interviews')
@@ -31,19 +32,25 @@ class SupervisionController extends Controller
 
     public function rhDashboard(Request $request)
     {
-        if ($request->user()->role !== 'rh') {
+        $user = $request->user();
+
+        if (! in_array($user->role, ['rh', 'admin'], true)) {
             return response()->json([
-                'message' => 'Accès refusé. Réservé aux responsables RH.',
+                'message' => 'Accès refusé.',
             ], 403);
         }
 
-        $candidateScope = fn (Builder $query) => $query->where(
-            'created_by_rh_id',
-            $request->user()->id
-        );
+        $candidateScope = $user->role === 'rh'
+            ? fn (Builder $query) => $query->where('created_by_rh_id', $user->id)
+            : null;
 
-        $recentInterviews = Interview::with('candidate:id,nom,prenom')
-            ->whereHas('candidate', $candidateScope)
+        $recentInterviewsQuery = Interview::with('candidate:id,nom,prenom');
+
+        if ($candidateScope) {
+            $recentInterviewsQuery->whereHas('candidate', $candidateScope);
+        }
+
+        $recentInterviews = $recentInterviewsQuery
             ->latest('date_heure')
             ->limit(3)
             ->get(['id', 'candidate_id', 'date_heure', 'statut']);

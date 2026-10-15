@@ -1,6 +1,5 @@
-import { useState, useEffect, useContext } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { AuthContext } from '../../context/AuthContext'
+import { useState, useEffect } from 'react'
+import AdminHeader from '../../components/AdminHeader'
 import api from '../../services/api'
 
 export default function UserManagement() {
@@ -10,9 +9,6 @@ export default function UserManagement() {
   
   const [showModal, setShowModal] = useState(false)
   const [editingUser, setEditingUser] = useState(null) 
-
-  const { user, logout } = useContext(AuthContext)
-  const navigate = useNavigate()
 
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -83,44 +79,9 @@ export default function UserManagement() {
     }
   }
 
-  const handleLogout = async () => {
-    await logout()
-    navigate('/login')
-  }
-
   return (
     <div className="min-h-screen bg-slate-50">
-      <nav className="border-b border-slate-200 bg-white px-8 py-4 shadow-sm">
-        <div className="mx-auto flex max-w-6xl items-center justify-between">
-          <div className="flex items-center space-x-6">
-            <span className="text-xl font-bold text-indigo-700">RecrutPro</span>
-            <div className="flex space-x-4">
-              <Link
-                to="/admin/dashboard"
-                className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 transition"
-              >
-                Supervision Globale
-              </Link>
-              <Link
-                to="/admin/users"
-                className="rounded-lg bg-indigo-50 px-3 py-2 text-sm font-semibold text-indigo-700 transition"
-              >
-                Gestion Utilisateurs
-              </Link>
-            </div>
-          </div>
-
-          <div className="flex items-center space-x-4">
-            <span className="text-sm font-medium text-slate-700">{user?.name}</span>
-            <button
-              onClick={handleLogout}
-              className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
-            >
-              Se déconnecter
-            </button>
-          </div>
-        </div>
-      </nav>
+      <AdminHeader />
 
       <div className="mx-auto max-w-6xl p-8">
         <div className="mb-8 flex items-center justify-between">

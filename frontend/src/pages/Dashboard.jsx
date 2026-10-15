@@ -1,5 +1,8 @@
 
+import { useContext } from 'react'
 import { Users, CalendarDays, UserCheck, Clock3, LayoutDashboard, BriefcaseBusiness, Settings, Bell, Search, ArrowUpRight } from 'lucide-react'
+import { AuthContext } from '../context/AuthContext'
+import AdminHeader from '../components/AdminHeader'
 
 const stats = [
   {
@@ -33,8 +36,12 @@ const stats = [
 ]
 
 function Dashboard() {
+  const { user } = useContext(AuthContext)
+
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 md:flex">
+    <>
+      {user?.role === 'admin' && <AdminHeader />}
+      <div className="min-h-screen bg-slate-50 text-slate-800 md:flex">
       <aside className="flex w-full flex-col bg-white px-5 py-6 shadow-sm md:min-h-screen md:w-64 md:shrink-0">
         <h1 className="mb-10 text-2xl font-extrabold tracking-tight text-violet-700">
           Recrut<span className="text-slate-800">RH</span>
@@ -111,11 +118,15 @@ function Dashboard() {
 
             <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-2 pr-4">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-100 font-bold text-violet-700">
-                RH
+                {user?.role === 'admin' ? 'AD' : 'RH'}
               </div>
               <div>
-                <p className="text-sm font-semibold text-slate-800">Responsable RH</p>
-                <p className="text-xs text-slate-500">Espace RH</p>
+                <p className="text-sm font-semibold text-slate-800">
+                  {user?.name || (user?.role === 'admin' ? 'Administrateur' : 'Responsable RH')}
+                </p>
+                <p className="text-xs text-slate-500">
+                  {user?.role === 'admin' ? 'Administrateur' : 'Espace RH'}
+                </p>
               </div>
             </div>
           </div>
@@ -236,7 +247,8 @@ function Dashboard() {
           </div>
         </section>
       </main>
-    </div>
+      </div>
+    </>
   )
 }
 

@@ -46,8 +46,10 @@ $data = $request->validate([
 ]);
 
 
-        Candidate::where('created_by_rh_id', $request->user()->id)
-            ->findOrFail($data['candidate_id']);
+        if ($request->user()->role !== 'admin') {
+            Candidate::where('created_by_rh_id', $request->user()->id)
+                ->findOrFail($data['candidate_id']);
+        }
 
         $interview = Interview::create($data);
 
@@ -56,9 +58,9 @@ $data = $request->validate([
 
     public function show(Request $request, string $id)
     {
-        $query = Interview::with(['candidate', 'responsable:id,name']);
+        $query = Interview::with('candidate');
 
-        if ($request->user()->role === 'rh') {
+        if ($request->user()->role !== 'admin') {
             $query->whereHas('candidate', function ($candidateQuery) use ($request) {
                 $candidateQuery->where('created_by_rh_id', $request->user()->id);
             });
@@ -69,9 +71,15 @@ $data = $request->validate([
 
     public function update(Request $request, string $id)
     {
-        $interview = Interview::whereHas('candidate', function ($query) use ($request) {
-            $query->where('created_by_rh_id', $request->user()->id);
-        })->findOrFail($id);
+        $query = Interview::query();
+
+        if ($request->user()->role !== 'admin') {
+            $query->whereHas('candidate', function ($candidateQuery) use ($request) {
+                $candidateQuery->where('created_by_rh_id', $request->user()->id);
+            });
+        }
+
+        $interview = $query->findOrFail($id);
 
 $data = $request->validate([
     'candidate_id' => 'sometimes|required|exists:candidates,id',
@@ -84,8 +92,10 @@ $data = $request->validate([
 ]);
 
         if (isset($data['candidate_id'])) {
-            Candidate::where('created_by_rh_id', $request->user()->id)
-                ->findOrFail($data['candidate_id']);
+            if ($request->user()->role !== 'admin') {
+                Candidate::where('created_by_rh_id', $request->user()->id)
+                    ->findOrFail($data['candidate_id']);
+            }
         }
 
         $interview->update($data);
@@ -95,9 +105,15 @@ $data = $request->validate([
 
     public function destroy(Request $request, string $id)
     {
-        $interview = Interview::whereHas('candidate', function ($query) use ($request) {
-            $query->where('created_by_rh_id', $request->user()->id);
-        })->findOrFail($id);
+        $query = Interview::query();
+
+        if ($request->user()->role !== 'admin') {
+            $query->whereHas('candidate', function ($candidateQuery) use ($request) {
+                $candidateQuery->where('created_by_rh_id', $request->user()->id);
+            });
+        }
+
+        $interview = $query->findOrFail($id);
 
         $interview->delete();
 
