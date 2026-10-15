@@ -1,5 +1,5 @@
 import { useState, useContext } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { AuthContext } from '../context/AuthContext'
 
 export default function Login() {
@@ -15,10 +15,10 @@ export default function Login() {
     try {
       const res = await login(email, password)
       
-      if (res?.user?.role === 'admin' || localStorage.getItem('role') === 'admin') {
+      if (res.user.role === 'admin') {
         navigate('/admin/dashboard')
       } else {
-        navigate('/rh/dashboard')
+        navigate('/dashboard')
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Identifiants incorrects ou erreur de connexion')
@@ -93,15 +93,6 @@ export default function Login() {
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-slate-600">
-          Vous n'avez pas encore de compte ?{' '}
-          <Link
-            to="/register"
-            className="font-semibold text-indigo-600 hover:underline"
-          >
-            Créer un compte
-          </Link>
-        </p>
       </div>
     </div>
   )

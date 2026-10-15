@@ -9,12 +9,12 @@ use Tests\TestCase;
 
 class RoleMiddlewareTest extends TestCase
 {
-    public function test_rh_routes_allow_rh_and_deny_admin(): void
+    public function test_rh_routes_allow_rh_and_admin(): void
     {
         $middleware = new RhMiddleware();
 
         $this->assertSame(204, $this->runMiddleware($middleware, 'rh'));
-        $this->assertSame(403, $this->runMiddleware($middleware, 'admin'));
+        $this->assertSame(204, $this->runMiddleware($middleware, 'admin'));
     }
 
     public function test_admin_routes_allow_admin_and_deny_rh(): void

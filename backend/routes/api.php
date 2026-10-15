@@ -9,7 +9,6 @@ use App\Http\Controllers\Api\RhController;
 use App\Http\Controllers\Api\SupervisionController;
 use App\Http\Controllers\Api\UserController;
 
-Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::get('/user', function (Request $request) {
@@ -17,6 +16,10 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(function () {
+
+    Route::get('/me', function (Request $request) {
+        return $request->user();
+    });
 
     Route::post('/logout', [AuthController::class, 'logout']);
 

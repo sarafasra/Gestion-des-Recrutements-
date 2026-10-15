@@ -9,32 +9,62 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (token) {
-      api.get('/me')
-        .then((res) => setUser(res.data))
-        .catch(() => logout())
-        .finally(() => setLoading(false))
-    } else {
-      setLoading(false)
+    let active = true
+
+    const loadUser = async () => {
+      if (!token) {
+        setUser(null)
+        setLoading(false)
+        return
+      }
+
+      setLoading(true)
+
+      try {
+        const res = await api.get('/me')
+        if (active) setUser(res.data)
+      } catch {
+        if (active) {
+          localStorage.removeItem('token')
+          setToken(null)
+          setUser(null)
+        }
+      } finally {
+        if (active) setLoading(false)
+      }
+    }
+
+    loadUser()
+
+    return () => {
+      active = false
     }
   }, [token])
 
   const login = async (email, password) => {
     const res = await api.post('/login', { email, password })
+
+    if (!res.data?.token || !res.data?.user) {
+      throw new Error('Invalid login response')
+    }
+
     localStorage.setItem('token', res.data.token)
     setToken(res.data.token)
     setUser(res.data.user)
+    setLoading(false)
     return res.data
   }
 
   const logout = async () => {
     try {
       await api.post('/logout')
-    } catch (e) {
+    } catch {
+      localStorage.removeItem('token')
     }
     localStorage.removeItem('token')
     setToken(null)
     setUser(null)
+    setLoading(false)
   }
 
   return (

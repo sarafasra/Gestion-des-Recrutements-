@@ -10,7 +10,7 @@ class RhMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->user() && $request->user()->role === 'rh') {
+        if ($request->user() && in_array($request->user()->role, ['rh', 'admin'], true)) {
             return $next($request);
         }
 

@@ -1,6 +1,5 @@
-import { useState, useEffect, useContext } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { AuthContext } from '../../context/AuthContext'
+import { useState, useEffect } from 'react'
+import AdminHeader from '../../components/AdminHeader'
 import api from '../../services/api'
 
 export default function AdminDashboard() {
@@ -8,16 +7,16 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  const { user, logout } = useContext(AuthContext)
-  const navigate = useNavigate()
-
   useEffect(() => {
     const fetchSupervisionData = async () => {
       try {
         const res = await api.get('/admin/supervision')
-        setData(res.data)
+        setData({
+          stats: res.data.stats || {},
+          candidates: Array.isArray(res.data.candidates) ? res.data.candidates : [],
+        })
       } catch (err) {
-        setError('Erreur lors du chargement des données de supervision.')
+        setError(err.response?.data?.message || 'Erreur lors du chargement des données de supervision.')
       } finally {
         setLoading(false)
       }
@@ -26,44 +25,9 @@ export default function AdminDashboard() {
     fetchSupervisionData()
   }, [])
 
-  const handleLogout = async () => {
-    await logout()
-    navigate('/login')
-  }
-
   return (
     <div className="min-h-screen bg-slate-50">
-      <nav className="border-b border-slate-200 bg-white px-8 py-4 shadow-sm">
-        <div className="mx-auto flex max-w-6xl items-center justify-between">
-          <div className="flex items-center space-x-6">
-            <span className="text-xl font-bold text-indigo-700">RecrutPro</span>
-            <div className="flex space-x-4">
-              <Link
-                to="/admin/dashboard"
-                className="rounded-lg bg-indigo-50 px-3 py-2 text-sm font-semibold text-indigo-700"
-              >
-                Supervision Globale
-              </Link>
-              <Link
-                to="/admin/users"
-                className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100"
-              >
-                Gestion Utilisateurs
-              </Link>
-            </div>
-          </div>
-
-          <div className="flex items-center space-x-4">
-            <span className="text-sm font-medium text-slate-700">{user?.name}</span>
-            <button
-              onClick={handleLogout}
-              className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100"
-            >
-              Se déconnecter
-            </button>
-          </div>
-        </div>
-      </nav>
+      <AdminHeader />
 
       <div className="mx-auto max-w-6xl p-8">
         <div className="mb-8">
@@ -101,7 +65,7 @@ export default function AdminDashboard() {
 
             <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
               <h2 className="mb-4 text-lg font-bold text-slate-800">
-                Suivi Général des Candidatures (Lecture Seule)
+                Suivi Général des Candidatures 
               </h2>
 
               {data.candidates.length === 0 ? (
@@ -122,12 +86,12 @@ export default function AdminDashboard() {
                     <tbody className="divide-y divide-slate-200">
                       {data.candidates.map((c) => (
                         <tr key={c.id} className="hover:bg-slate-50">
-                          <td className="px-6 py-4 font-medium text-slate-900">{c.name}</td>
-                          <td className="px-6 py-4">{c.position}</td>
+                          <td className="px-6 py-4 font-medium text-slate-900">{c.prenom} {c.nom}</td>
+                          <td className="px-6 py-4">{c.fonction}</td>
                           <td className="px-6 py-4">{c.source}</td>
                           <td className="px-6 py-4">
                             <span className="inline-block rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">
-                              {c.status || 'Planifié'}
+                              {c.interviews?.[0]?.statut || 'Planifié'}
                             </span>
                           </td>
                         </tr>

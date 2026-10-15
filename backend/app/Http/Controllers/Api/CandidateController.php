@@ -67,20 +67,26 @@ public function index(Request $request)
 
     public function show(Request $request, string $id)
     {
-        $candidate = Candidate::where(
-            'created_by_rh_id',
-            $request->user()->id
-        )->findOrFail($id);
+        $query = Candidate::query();
+
+        if ($request->user()->role !== 'admin') {
+            $query->where('created_by_rh_id', $request->user()->id);
+        }
+
+        $candidate = $query->findOrFail($id);
 
         return response()->json($candidate);
     }
 
     public function update(Request $request, string $id)
     {
-        $candidate = Candidate::where(
-            'created_by_rh_id',
-            $request->user()->id
-        )->findOrFail($id);
+        $query = Candidate::query();
+
+        if ($request->user()->role !== 'admin') {
+            $query->where('created_by_rh_id', $request->user()->id);
+        }
+
+        $candidate = $query->findOrFail($id);
 
         $data = $request->validate([
             'nom' => 'sometimes|required|string',
@@ -125,10 +131,13 @@ public function index(Request $request)
 
     public function destroy(Request $request, string $id)
     {
-        $candidate = Candidate::where(
-            'created_by_rh_id',
-            $request->user()->id
-        )->findOrFail($id);
+        $query = Candidate::query();
+
+        if ($request->user()->role !== 'admin') {
+            $query->where('created_by_rh_id', $request->user()->id);
+        }
+
+        $candidate = $query->findOrFail($id);
 
         $cvPath = $candidate->cv;
 
@@ -146,10 +155,13 @@ public function index(Request $request)
 
 public function showCv(Request $request, string $id)
 {
-    $candidate = Candidate::where(
-        'created_by_rh_id',
-        $request->user()->id
-    )->findOrFail($id);
+    $query = Candidate::query();
+
+    if ($request->user()->role !== 'admin') {
+        $query->where('created_by_rh_id', $request->user()->id);
+    }
+
+    $candidate = $query->findOrFail($id);
 
     if (!$candidate->cv || !Storage::disk('local')->exists($candidate->cv)) {
         abort(404, 'CV introuvable');

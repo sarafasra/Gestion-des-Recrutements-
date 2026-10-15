@@ -12,6 +12,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->prependToGroup('api', \App\Http\Middleware\EnsureApiRequestsAcceptJson::class);
+
         $middleware->validateCsrfTokens(except: [
             'api/*',
         ]);
@@ -22,5 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        
+        $exceptions->shouldRenderJsonWhen(function (\Illuminate\Http\Request $request, \Throwable $exception) {
+            return $request->is('api/*') || $request->expectsJson();
+        });
     })->create();
