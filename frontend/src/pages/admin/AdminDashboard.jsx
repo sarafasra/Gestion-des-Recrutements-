@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import AdminHeader from '../../components/AdminHeader'
 import api from '../../services/api'
 
 export default function AdminDashboard() {
@@ -27,8 +26,6 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <AdminHeader />
-
       <div className="mx-auto max-w-6xl p-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-800">Tableau de Bord — Supervision</h1>

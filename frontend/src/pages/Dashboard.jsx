@@ -1,8 +1,6 @@
 
-import { useContext } from 'react'
-import { Users, CalendarDays, UserCheck, Clock3, LayoutDashboard, BriefcaseBusiness, Settings, Bell, Search, ArrowUpRight } from 'lucide-react'
-import { AuthContext } from '../context/AuthContext'
-import AdminHeader from '../components/AdminHeader'
+import { Link } from 'react-router-dom'
+import { Users, CalendarDays, UserCheck, Clock3, BriefcaseBusiness, ArrowUpRight } from 'lucide-react'
 
 const stats = [
   {
@@ -36,107 +34,18 @@ const stats = [
 ]
 
 function Dashboard() {
-  const { user } = useContext(AuthContext)
-
   return (
-    <>
-      {user?.role === 'admin' && <AdminHeader />}
-      <div className="min-h-screen bg-slate-50 text-slate-800 md:flex">
-      <aside className="flex w-full flex-col bg-white px-5 py-6 shadow-sm md:min-h-screen md:w-64 md:shrink-0">
-        <h1 className="mb-10 text-2xl font-extrabold tracking-tight text-violet-700">
-          Recrut<span className="text-slate-800">RH</span>
-        </h1>
-
-        <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-slate-400">
-          Menu principal
-        </p>
-
-        <nav className="space-y-2">
-          <a
-            href="/dashboard"
-            className="flex items-center gap-3 rounded-xl bg-violet-600 px-4 py-3 font-medium text-white shadow-sm"
-          >
-            <LayoutDashboard size={19} />
-            Dashboard
-          </a>
-
-          <a
-            href="/candidates"
-            className="flex items-center gap-3 rounded-xl px-4 py-3 text-slate-600 transition hover:bg-violet-50 hover:text-violet-700"
-          >
-            <Users size={19} />
-            Candidats
-          </a>
-
-          <a
-            href="/interviews"
-            className="flex items-center gap-3 rounded-xl px-4 py-3 text-slate-600 transition hover:bg-violet-50 hover:text-violet-700"
-          >
-            <CalendarDays size={19} />
-            Entretiens
-          </a>
-        </nav>
-
-        <div className="mt-8 border-t border-slate-100 pt-5 md:mt-auto">
-          <a
-            href="/settings"
-            className="flex items-center gap-3 rounded-xl px-4 py-3 text-slate-500 transition hover:bg-slate-50"
-          >
-            <Settings size={19} />
-            Paramètres
-          </a>
-        </div>
-      </aside>
-
-      <main className="min-w-0 flex-1 p-5 md:p-8 lg:p-10">
-        <header className="mb-8 flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">
-              Dashboard
-            </h2>
-            <p className="mt-2 text-sm text-slate-500">
-              Bienvenue dans votre espace de recrutement.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              aria-label="Rechercher"
-              className="rounded-xl border border-slate-200 bg-white p-3 text-slate-500 transition hover:bg-slate-100"
-            >
-              <Search size={19} />
-            </button>
-
-            <button
-              type="button"
-              aria-label="Notifications"
-              className="rounded-xl border border-slate-200 bg-white p-3 text-slate-500 transition hover:bg-slate-100"
-            >
-              <Bell size={19} />
-            </button>
-
-            <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-2 pr-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-100 font-bold text-violet-700">
-                {user?.role === 'admin' ? 'AD' : 'RH'}
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-slate-800">
-                  {user?.name || (user?.role === 'admin' ? 'Administrateur' : 'Responsable RH')}
-                </p>
-                <p className="text-xs text-slate-500">
-                  {user?.role === 'admin' ? 'Administrateur' : 'Espace RH'}
-                </p>
-              </div>
-            </div>
-          </div>
+    <div className="min-h-screen bg-slate-50 p-5 text-slate-800 md:p-8 lg:p-10">
+      <main className="mx-auto max-w-7xl">
+        <header className="mb-8">
+          <h2 className="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">Dashboard</h2>
+          <p className="mt-2 text-sm text-slate-500">Bienvenue dans votre espace de recrutement.</p>
         </header>
-
         <section className="mb-8 overflow-hidden rounded-2xl bg-gradient-to-r from-violet-700 to-indigo-600 p-6 text-white shadow-lg shadow-violet-100 md:p-8">
           <div className="flex flex-wrap items-center justify-between gap-5">
             <div>
               <p className="mb-2 text-sm font-medium text-violet-100">
-                VOTRE ESPACE RH
+                VOTRE ESPACE RECRUTEMENT
               </p>
               <h3 className="text-2xl font-bold md:text-3xl">
                 Bonjour, bienvenue !
@@ -212,8 +121,8 @@ function Dashboard() {
             </div>
 
             <div className="space-y-3">
-              <a
-                href="/candidates"
+              <Link
+                to="/candidates"
                 className="flex items-center gap-4 rounded-xl border border-slate-100 p-4 transition hover:border-violet-200 hover:bg-violet-50"
               >
                 <div className="rounded-xl bg-violet-100 p-3 text-violet-700">
@@ -226,10 +135,10 @@ function Dashboard() {
                   </p>
                 </div>
                 <ArrowUpRight size={18} className="text-slate-400" />
-              </a>
+              </Link>
 
-              <a
-                href="/interviews"
+              <Link
+                to="/interviews"
                 className="flex items-center gap-4 rounded-xl border border-slate-100 p-4 transition hover:border-violet-200 hover:bg-violet-50"
               >
                 <div className="rounded-xl bg-orange-100 p-3 text-orange-600">
@@ -242,13 +151,12 @@ function Dashboard() {
                   </p>
                 </div>
                 <ArrowUpRight size={18} className="text-slate-400" />
-              </a>
+              </Link>
             </div>
           </div>
         </section>
       </main>
-      </div>
-    </>
+    </div>
   )
 }
 

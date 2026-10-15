@@ -7,6 +7,7 @@ import Interviews from './pages/Interviews';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import UserManagement from './pages/admin/UserManagement';
 import ProtectedRoute from './components/ProtectedRoute';
+import SidebarLayout from './components/SidebarLayout';
 
 function App() {
   return (
@@ -14,16 +15,18 @@ function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
-        <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/users" element={<UserManagement />} />
-        </Route>
         <Route element={<ProtectedRoute allowedRoles={['admin', 'rh']} />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/rh/dashboard" element={<Dashboard />} />
-          <Route path="/candidates" element={<Candidates />} />
-          <Route path="/rh/candidates" element={<Candidates />} />
-          <Route path="/interviews" element={<Interviews />} />
+          <Route element={<SidebarLayout />}>
+            <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
+              <Route path="/admin/users" element={<UserManagement />} />
+            </Route>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/rh/dashboard" element={<Dashboard />} />
+            <Route path="/candidates" element={<Candidates />} />
+            <Route path="/rh/candidates" element={<Candidates />} />
+            <Route path="/interviews" element={<Interviews />} />
+          </Route>
         </Route>
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>

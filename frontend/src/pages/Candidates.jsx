@@ -1,7 +1,5 @@
 
-import { useContext, useEffect, useState } from 'react'
-import { AuthContext } from '../context/AuthContext'
-import AdminHeader from '../components/AdminHeader'
+import { useEffect, useState } from 'react'
 import api from '../services/api'
 
 const initialForm = {
@@ -17,7 +15,6 @@ const initialForm = {
 }
 
 function Candidates() {
-  const { user } = useContext(AuthContext)
   const [candidates, setCandidates] = useState([])
   const [form, setForm] = useState(initialForm)
   const [editId, setEditId] = useState(null)
@@ -132,7 +129,6 @@ function Candidates() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {user?.role === 'admin' && <AdminHeader />}
       <div className="mx-auto max-w-7xl p-4 md:p-8">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div>

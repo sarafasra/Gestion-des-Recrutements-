@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import AdminHeader from '../../components/AdminHeader'
 import api from '../../services/api'
 
 export default function UserManagement() {
@@ -81,8 +80,6 @@ export default function UserManagement() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <AdminHeader />
-
       <div className="mx-auto max-w-6xl p-8">
         <div className="mb-8 flex items-center justify-between">
           <div>
