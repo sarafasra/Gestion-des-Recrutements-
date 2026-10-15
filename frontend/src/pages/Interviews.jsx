@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../context/AuthContext'
-import AdminHeader from '../components/AdminHeader'
 import api from '../services/api'
 
 const emptyForm = {
@@ -138,7 +137,6 @@ export default function Interviews() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {user?.role === 'admin' && <AdminHeader />}
       <main className="mx-auto max-w-7xl p-6 md:p-8">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div>
