@@ -112,6 +112,24 @@ function Candidates() {
     }
   }
 
+  async function handleCvDownload(candidate) {
+    try {
+      const response = await api.get(`/candidates/${candidate.id}/cv`, {
+        responseType: 'blob',
+      })
+      const url = URL.createObjectURL(response.data)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `CV-${candidate.prenom}-${candidate.nom}.${candidate.cv.split('.').pop()}`
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000)
+    } catch (err) {
+      setError(err.response?.data?.message || 'Erreur lors du téléchargement du CV.')
+    }
+  }
+
   function cancelForm() {
     setForm(initialForm)
     setEditId(null)
@@ -242,13 +260,16 @@ function Candidates() {
                 <option value="basse">Priorité basse</option>
               </select>
 
-              <input
-                type="file"
-                name="cv"
-                accept=".pdf,.doc,.docx"
-                onChange={handleChange}
-                className="rounded-lg border p-3"
-              />
+              <label className="min-w-0 text-sm font-medium text-gray-700">
+                CV
+                <input
+                  type="file"
+                  name="cv"
+                  accept=".pdf,.doc,.docx"
+                  onChange={handleChange}
+                  className="mt-1 block w-full min-w-0 rounded-lg border p-3 text-sm"
+                />
+              </label>
             </div>
 
             <div className="mt-5 flex gap-3">
@@ -291,7 +312,7 @@ function Candidates() {
         </div>
 
         <div className="overflow-x-auto rounded-xl bg-white shadow">
-          <table className="w-full min-w-[800px] text-left text-sm">
+          <table className="w-full min-w-[960px] text-left text-sm">
             <thead className="bg-gray-50 text-gray-600">
               <tr>
                 <th className="p-4">Candidat</th>
@@ -299,6 +320,7 @@ function Candidates() {
                 <th className="p-4">Téléphone</th>
                 <th className="p-4">Fonction</th>
                 <th className="p-4">Priorité</th>
+                <th className="p-4">CV</th>
                 <th className="p-4">Actions</th>
               </tr>
             </thead>
@@ -306,13 +328,13 @@ function Candidates() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="6" className="p-8 text-center">
+                  <td colSpan="7" className="p-8 text-center">
                     Chargement...
                   </td>
                 </tr>
               ) : filteredCandidates.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="p-8 text-center text-gray-500">
+                  <td colSpan="7" className="p-8 text-center text-gray-500">
                     Aucun candidat trouvé.
                   </td>
                 </tr>
@@ -326,6 +348,19 @@ function Candidates() {
                     <td className="p-4">{c.telephone}</td>
                     <td className="p-4">{c.fonction}</td>
                     <td className="p-4">{c.priorite}</td>
+                    <td className="p-4">
+                      {c.cv ? (
+                        <button
+                          type="button"
+                          onClick={() => handleCvDownload(c)}
+                          className="whitespace-nowrap font-medium text-violet-600 hover:text-violet-800"
+                        >
+                          Télécharger
+                        </button>
+                      ) : (
+                        <span className="text-gray-400">Aucun CV</span>
+                      )}
+                    </td>
                     <td className="p-4">
                       <div className="flex gap-3">
                         <button

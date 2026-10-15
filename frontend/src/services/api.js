@@ -13,6 +13,10 @@ api.interceptors.request.use((config) => {
 
   config.headers.Accept = 'application/json';
 
+  if (config.data instanceof FormData) {
+    delete config.headers['Content-Type'];
+  }
+
   if (token) {
     config.headers.Authorization = 'Bearer ' + token;
   }
