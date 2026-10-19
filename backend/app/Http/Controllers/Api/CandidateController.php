@@ -14,6 +14,10 @@ public function index(Request $request)
 {
     $query = Candidate::query();
 
+    if ($request->user()->role === 'rh') {
+        $query->where('created_by_rh_id', $request->user()->id);
+    }
+
     if ($request->filled('priorite')) {
         $query->where('priorite', $request->priorite);
     }

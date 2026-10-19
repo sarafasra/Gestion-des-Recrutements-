@@ -28,18 +28,26 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('users', UserController::class)->except(['show']);
     });
 
+    Route::middleware('admin.or.rh')->group(function () {
+        Route::get('/candidates', [CandidateController::class, 'index']);
+        Route::get('/candidates/{id}', [CandidateController::class, 'show']);
+        Route::get('/candidates/{id}/cv', [CandidateController::class, 'showCv']);
+
+        Route::get('/interviews', [InterviewController::class, 'index']);
+        Route::get('/interviews/{id}', [InterviewController::class, 'show']);
+    });
+
     Route::middleware('rh')->group(function () {
         Route::get('/rh/dashboard-stats', [SupervisionController::class, 'rhDashboard']);
         Route::get('/rh-users', [RhController::class, 'index']);
 
-        Route::apiResource('candidates', CandidateController::class);
+        Route::post('/candidates', [CandidateController::class, 'store']);
+        Route::match(['put', 'patch'], '/candidates/{id}', [CandidateController::class, 'update']);
+        Route::delete('/candidates/{id}', [CandidateController::class, 'destroy']);
 
-        Route::get('/candidates/{id}/cv', [
-            CandidateController::class,
-            'showCv'
-        ]);
-
-        Route::apiResource('interviews', InterviewController::class);
+        Route::post('/interviews', [InterviewController::class, 'store']);
+        Route::match(['put', 'patch'], '/interviews/{id}', [InterviewController::class, 'update']);
+        Route::delete('/interviews/{id}', [InterviewController::class, 'destroy']);
     });
 
 });

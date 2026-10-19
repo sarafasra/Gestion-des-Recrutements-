@@ -13,7 +13,13 @@ class InterviewController extends Controller
 
 public function index(Request $request)
 {
-    $query = Interview::with('candidate');
+    $query = Interview::with(['candidate', 'responsable:id,name']);
+
+    if ($request->user()->role === 'rh') {
+        $query->whereHas('candidate', function ($candidateQuery) use ($request) {
+            $candidateQuery->where('created_by_rh_id', $request->user()->id);
+        });
+    }
 
     if ($request->filled('statut')) {
         $query->where('statut', $request->statut);
